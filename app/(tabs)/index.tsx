@@ -1,13 +1,20 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { Link } from 'expo-router';
-import { Search, Star } from 'lucide-react-native';
+import AppointmentCard from '@/components/AppointmentCard';
+import DoctorCard from '@/components/DoctorCard';
+import SpecialtyCard from '@/components/SpecialtyCard';
+import CustomButton from '@/components/ui/CustomButton';
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
-import CustomButton from '@/components/ui/CustomButton';
-import DoctorCard from '@/components/DoctorCard';
-import AppointmentCard from '@/components/AppointmentCard';
-import SpecialtyCard from '@/components/SpecialtyCard';
+import { Search } from 'lucide-react-native';
+import { useState } from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const specialties = [
   { id: 1, name: 'Sonography', icon: 'waveform' },
@@ -17,37 +24,39 @@ const specialties = [
 ];
 
 const doctors = [
-  { 
-    id: 1, 
-    name: 'Dr. Sarah Wilson', 
-    specialty: 'Sonographer', 
-    rating: 4.9, 
+  {
+    id: 1,
+    name: 'Dr. Sarah Wilson',
+    specialty: 'Sonographer',
+    rating: 4.9,
     availability: 'Today',
-    image: 'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300'
+    image:
+      'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300',
   },
-  { 
-    id: 2, 
-    name: 'Dr. John Smith', 
-    specialty: 'Radiologist', 
-    rating: 4.8, 
+  {
+    id: 2,
+    name: 'Dr. John Smith',
+    specialty: 'Radiologist',
+    rating: 4.8,
     availability: 'Tomorrow',
-    image: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300'
+    image:
+      'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
   },
 ];
 
 const appointments = [
-  { 
-    id: 1, 
-    doctorName: 'Dr. Sarah Wilson', 
-    appointmentType: 'Sonography', 
-    date: 'Today, 2:00 PM', 
+  {
+    id: 1,
+    doctorName: 'Dr. Sarah Wilson',
+    appointmentType: 'Sonography',
+    date: 'Today, 2:00 PM',
     location: 'Medical Center',
   },
-  { 
-    id: 2, 
-    doctorName: 'Dr. John Smith', 
-    appointmentType: 'Radiology', 
-    date: 'Tomorrow, 10:30 AM', 
+  {
+    id: 2,
+    doctorName: 'Dr. John Smith',
+    appointmentType: 'Radiology',
+    date: 'Tomorrow, 10:30 AM',
     location: 'City Hospital',
   },
 ];
@@ -56,7 +65,10 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Find Your Doctor</Text>
@@ -64,14 +76,20 @@ export default function HomeScreen() {
         </View>
         <TouchableOpacity style={styles.avatar}>
           <Image
-            source={{ uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300' }}
+            source={{
+              uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300',
+            }}
             style={styles.avatarImage}
           />
         </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
-        <Search size={20} color={COLORS.textSecondary} style={styles.searchIcon} />
+        <Search
+          size={20}
+          color={COLORS.textSecondary}
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Search doctors, specialties..."
@@ -86,7 +104,9 @@ export default function HomeScreen() {
         </View>
         <View style={styles.bookSonographyContent}>
           <Text style={styles.bookSonographyTitle}>Book Sonography</Text>
-          <Text style={styles.bookSonographySubtitle}>Quick appointment for ultrasound services</Text>
+          <Text style={styles.bookSonographySubtitle}>
+            Quick appointment for ultrasound services
+          </Text>
         </View>
         <CustomButton
           title="Book Now"
@@ -96,14 +116,22 @@ export default function HomeScreen() {
       </View>
 
       <Text style={styles.sectionTitle}>Popular Specialties</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.specialtiesScroll}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.specialtiesScroll}
+      >
         {specialties.map((specialty) => (
           <SpecialtyCard key={specialty.id} specialty={specialty} />
         ))}
       </ScrollView>
 
       <Text style={styles.sectionTitle}>Available Doctors</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.doctorsScroll}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.doctorsScroll}
+      >
         {doctors.map((doctor) => (
           <DoctorCard key={doctor.id} doctor={doctor} />
         ))}

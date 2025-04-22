@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, TextInput } from 'react-native';
-import { Search, Lock, ChevronLeft } from 'lucide-react-native';
-import { router } from 'expo-router';
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
+import { router } from 'expo-router';
+import { ChevronLeft, Lock, Search } from 'lucide-react-native';
+import React, { useState } from 'react';
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 // Sample data for conversations
 const conversations = [
@@ -12,9 +19,11 @@ const conversations = [
     doctor: {
       name: 'Dr. Sarah Johnson',
       specialty: 'Cardiologist',
-      avatar: 'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300',
+      avatar:
+        'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
-    lastMessage: 'Your latest ECG results look normal. Continue with the prescribed medication.',
+    lastMessage:
+      'Your latest ECG results look normal. Continue with the prescribed medication.',
     timestamp: '10:30 AM',
     unread: false,
   },
@@ -23,9 +32,11 @@ const conversations = [
     doctor: {
       name: 'Dr. Michael Chen',
       specialty: 'Radiologist',
-      avatar: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
+      avatar:
+        'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
-    lastMessage: 'Please remember to fast 8 hours before your sonography tomorrow.',
+    lastMessage:
+      'Please remember to fast 8 hours before your sonography tomorrow.',
     timestamp: 'Yesterday',
     unread: true,
   },
@@ -34,28 +45,39 @@ const conversations = [
     doctor: {
       name: 'Dr. Emily Wilson',
       specialty: 'Neurologist',
-      avatar: 'https://images.pexels.com/photos/5407206/pexels-photo-5407206.jpeg?auto=compress&cs=tinysrgb&w=300',
+      avatar:
+        'https://images.pexels.com/photos/5407206/pexels-photo-5407206.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
-    lastMessage: 'Based on your symptoms, we should schedule a follow-up appointment.',
+    lastMessage:
+      'Based on your symptoms, we should schedule a follow-up appointment.',
     timestamp: 'Yesterday',
     unread: true,
   },
 ];
 
-const ConversationItem = ({ conversation, onPress }: { conversation: any; onPress: () => void }) => {
+const ConversationItem = ({
+  conversation,
+  onPress,
+}: {
+  conversation: any;
+  onPress: () => void;
+}) => {
   return (
     <TouchableOpacity style={styles.conversationItem} onPress={onPress}>
-      <Image source={{ uri: conversation.doctor.avatar }} style={styles.avatar} />
+      <Image
+        source={{ uri: conversation.doctor.avatar }}
+        style={styles.avatar}
+      />
       <View style={styles.conversationContent}>
         <View style={styles.conversationHeader}>
           <Text style={styles.doctorName}>{conversation.doctor.name}</Text>
           <Text style={styles.timestamp}>{conversation.timestamp}</Text>
         </View>
         <Text style={styles.specialty}>{conversation.doctor.specialty}</Text>
-        <Text 
+        <Text
           style={[
-            styles.lastMessage, 
-            conversation.unread && styles.unreadMessage
+            styles.lastMessage,
+            conversation.unread && styles.unreadMessage,
           ]}
           numberOfLines={2}
         >
@@ -69,7 +91,7 @@ const ConversationItem = ({ conversation, onPress }: { conversation: any; onPres
 
 export default function MessagesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const handleConversationPress = (id: string) => {
     router.push(`/messages/${id}`);
   };
@@ -87,12 +109,12 @@ export default function MessagesScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      
+
       <View style={styles.secureNotice}>
         <Lock size={16} color={COLORS.textSecondary} />
         <Text style={styles.secureText}>Secure Medical Messaging</Text>
       </View>
-      
+
       <FlatList
         data={conversations}
         keyExtractor={(item) => item.id}
