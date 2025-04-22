@@ -5,6 +5,7 @@ import { ChevronLeft, Clock, MapPin, CalendarCheck, CircleCheck as CheckCircle, 
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
 import CustomButton from '@/components/ui/CustomButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Sample appointment data - in a real app this would come from an API
 const appointmentData = {
@@ -14,13 +15,14 @@ const appointmentData = {
       name: 'Dr. Sarah Johnson',
       specialty: 'Radiologist - Sonography',
       rating: 4.8,
-      avatar: 'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300',
+      avatar:
+        'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
     facility: 'Metro Medical Center',
     address: '123 Healthcare Ave, New York, NY 10001',
     location: {
       latitude: 40.7128,
-      longitude: -74.0060,
+      longitude: -74.006,
     },
     appointmentType: 'Abdominal Sonography',
     patientId: '#PAT20240312',
@@ -41,7 +43,8 @@ const appointmentData = {
       name: 'Dr. Michael Chen',
       specialty: 'Cardiologist',
       rating: 4.9,
-      avatar: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
+      avatar:
+        'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
     facility: 'Heart Care Clinic',
     address: '456 Medical Blvd, New York, NY 10002',
@@ -66,7 +69,7 @@ const appointmentData = {
 
 export default function AppointmentDetailScreen() {
   const { id } = useLocalSearchParams();
-  const appointment = appointmentData[id as string];
+  const appointment = appointmentData[id as keyof typeof appointmentData];
 
   if (!appointment) {
     return (
@@ -77,123 +80,138 @@ export default function AppointmentDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <ChevronLeft size={24} color="#6E2FFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Appointment Details</Text>
-          <TouchableOpacity>
-            <Share2 size={24} color="#6E2FFF" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.statusCard}>
-        <View style={styles.statusRow}>
-          <View style={styles.statusDot}>
-            <CheckCircle size={16} color={COLORS.success} />
-          </View>
-          <Text style={styles.statusText}>{appointment.status}</Text>
-        </View>
-
-        <Text style={styles.dateText}>{appointment.date}</Text>
-        <View style={styles.timeRow}>
-          <Clock size={16} color={COLORS.textSecondary} />
-          <Text style={styles.timeText}>{appointment.time}</Text>
-          <Text style={styles.bulletPoint}>•</Text>
-          <Text style={styles.durationText}>{appointment.duration}</Text>
-        </View>
-      </View>
-
-      <View style={styles.doctorCard}>
-        <Image source={{ uri: appointment.doctor.avatar }} style={styles.doctorImage} />
-        <View style={styles.doctorInfo}>
-          <Text style={styles.doctorName}>{appointment.doctor.name}</Text>
-          <Text style={styles.doctorSpecialty}>{appointment.doctor.specialty}</Text>
-          <Text style={styles.facilityName}>{appointment.facility}</Text>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingText}>{appointment.doctor.rating}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.headerActions}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <ChevronLeft size={24} color="#6E2FFF" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Appointment Details</Text>
+            <TouchableOpacity>
+              <Share2 size={24} color="#6E2FFF" />
+            </TouchableOpacity>
           </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Patient Details</Text>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Name:</Text>
-          <Text style={styles.detailValue}>Michael Anderson</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Patient ID:</Text>
-          <Text style={styles.detailValue}>{appointment.patientId}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Appointment Type:</Text>
-          <Text style={styles.detailValue}>{appointment.appointmentType}</Text>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.preparationHeader}>
-          <Text style={styles.sectionTitle}>Preparation Instructions</Text>
-        </View>
-        {appointment.preparations.map((preparation, index) => (
-          <View key={index} style={styles.preparationItem}>
-            <View style={styles.bulletPoint}>
-              <Text style={styles.bullet}>•</Text>
+        <View style={styles.statusCard}>
+          <View style={styles.statusRow}>
+            <View style={styles.statusDot}>
+              <CheckCircle size={16} color={COLORS.success} />
             </View>
-            <Text style={styles.preparationText}>{preparation}</Text>
+            <Text style={styles.statusText}>{appointment.status}</Text>
           </View>
-        ))}
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Location</Text>
-        <Text style={styles.facilityAddress}>{appointment.facility}</Text>
-        <Text style={styles.address}>{appointment.address}</Text>
-        
-        <View style={styles.locationCard}>
-          <MapPin size={24} color={COLORS.primary} />
-          <Text style={styles.locationText}>{appointment.address}</Text>
+          <Text style={styles.dateText}>{appointment.date}</Text>
+          <View style={styles.timeRow}>
+            <Clock size={16} color={COLORS.textSecondary} />
+            <Text style={styles.timeText}>{appointment.time}</Text>
+            <Text style={styles.bulletPoint}>•</Text>
+            <Text style={styles.durationText}>{appointment.duration}</Text>
+          </View>
         </View>
-        
-        <CustomButton
-          title="Get Directions"
-          onPress={() => {}}
-          icon={<MapPin size={18} color="#FFFFFF" />}
-          style={styles.directionsButton}
-        />
-      </View>
 
-      <View style={styles.actionButtons}>
-        <CustomButton
-          title="Add to Calendar"
-          onPress={() => {}}
-          icon={<CalendarCheck size={18} color="#FFFFFF" />}
-          style={styles.calendarButton}
-        />
-        
-        <TouchableOpacity style={styles.contactButton}>
-          <Text style={styles.contactButtonText}>Contact Clinic</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.doctorCard}>
+          <Image
+            source={{ uri: appointment.doctor.avatar }}
+            style={styles.doctorImage}
+          />
+          <View style={styles.doctorInfo}>
+            <Text style={styles.doctorName}>{appointment.doctor.name}</Text>
+            <Text style={styles.doctorSpecialty}>
+              {appointment.doctor.specialty}
+            </Text>
+            <Text style={styles.facilityName}>{appointment.facility}</Text>
+            <View style={styles.ratingContainer}>
+              <Text style={styles.ratingText}>{appointment.doctor.rating}</Text>
+            </View>
+          </View>
+        </View>
 
-      <View style={styles.cancelSection}>
-        <TouchableOpacity style={styles.rescheduleButton}>
-          <Text style={styles.rescheduleButtonText}>Reschedule Appointment</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.cancelButton}>
-          <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Patient Details</Text>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Name:</Text>
+            <Text style={styles.detailValue}>Michael Anderson</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Patient ID:</Text>
+            <Text style={styles.detailValue}>{appointment.patientId}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Appointment Type:</Text>
+            <Text style={styles.detailValue}>
+              {appointment.appointmentType}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.preparationHeader}>
+            <Text style={styles.sectionTitle}>Preparation Instructions</Text>
+          </View>
+          {appointment.preparations.map((preparation, index) => (
+            <View key={index} style={styles.preparationItem}>
+              <View style={styles.bulletPoint}>
+                <Text style={styles.bullet}>•</Text>
+              </View>
+              <Text style={styles.preparationText}>{preparation}</Text>
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Location</Text>
+          <Text style={styles.facilityAddress}>{appointment.facility}</Text>
+          <Text style={styles.address}>{appointment.address}</Text>
+
+          <View style={styles.locationCard}>
+            <MapPin size={24} color={COLORS.primary} />
+            <Text style={styles.locationText}>{appointment.address}</Text>
+          </View>
+
+          <CustomButton
+            title="Get Directions"
+            onPress={() => {}}
+            icon={<MapPin size={18} color="#FFFFFF" />}
+            style={styles.directionsButton}
+          />
+        </View>
+
+        <View style={styles.actionButtons}>
+          <CustomButton
+            title="Add to Calendar"
+            onPress={() => {}}
+            icon={<CalendarCheck size={18} color="#FFFFFF" />}
+            style={styles.calendarButton}
+          />
+
+          <TouchableOpacity style={styles.contactButton}>
+            <Text style={styles.contactButtonText}>Contact Clinic</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.cancelSection}>
+          <TouchableOpacity style={styles.rescheduleButton}>
+            <Text style={styles.rescheduleButtonText}>
+              Reschedule Appointment
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',

@@ -4,22 +4,29 @@ import { ChevronRight, Lock, Bell, Globe, CircleHelp as HelpCircle, Mail, File, 
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
 import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const ProfileSection = ({ title, children }: { title?: string; children: React.ReactNode }) => (
+const ProfileSection = ({
+  title,
+  children,
+}: {
+  title?: string;
+  children: React.ReactNode;
+}) => (
   <View style={styles.section}>
     {title && <Text style={styles.sectionTitle}>{title}</Text>}
     <View style={styles.sectionContent}>{children}</View>
   </View>
 );
 
-const ProfileItem = ({ 
-  label, 
-  value, 
-  onPress, 
-  icon 
-}: { 
-  label: string; 
-  value?: string; 
+const ProfileItem = ({
+  label,
+  value,
+  onPress,
+  icon,
+}: {
+  label: string;
+  value?: string;
   onPress?: () => void;
   icon?: React.ReactNode;
 }) => (
@@ -51,80 +58,107 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.profileImageContainer}>
-          <Image
-            source={{ uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300' }}
-            style={styles.profileImage}
-          />
-          <TouchableOpacity style={styles.cameraButton}>
-            <Text style={styles.cameraButtonText}>📷</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.profileImageContainer}>
+            <Image
+              source={{
+                uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300',
+              }}
+              style={styles.profileImage}
+            />
+            <TouchableOpacity style={styles.cameraButton}>
+              <Text style={styles.cameraButtonText}>📷</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.profileName}>{userInfo.name}</Text>
+          <Text style={styles.profileEmail}>{userInfo.email}</Text>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={handleEditProfile}
+          >
+            <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.profileName}>{userInfo.name}</Text>
-        <Text style={styles.profileEmail}>{userInfo.email}</Text>
-        <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-          <Text style={styles.editButtonText}>Edit Profile</Text>
+
+        <ProfileSection title="Personal Information">
+          <ProfileItem
+            label="Full Name"
+            value={userInfo.name}
+            onPress={() => {}}
+          />
+          <ProfileItem
+            label="Phone"
+            value={userInfo.phone}
+            onPress={() => {}}
+          />
+          <ProfileItem
+            label="Date of Birth"
+            value={userInfo.dob}
+            onPress={() => {}}
+          />
+          <ProfileItem
+            label="Gender"
+            value={userInfo.gender}
+            onPress={() => {}}
+          />
+        </ProfileSection>
+
+        <ProfileSection title="Account Settings">
+          <ProfileItem
+            label="Change Password"
+            onPress={() => {}}
+            icon={<Lock size={20} color={COLORS.primary} />}
+          />
+          <ProfileItem
+            label="Notification Preferences"
+            onPress={() => {}}
+            icon={<Bell size={20} color={COLORS.primary} />}
+          />
+          <ProfileItem
+            label="Language Settings"
+            onPress={() => {}}
+            icon={<Globe size={20} color={COLORS.primary} />}
+          />
+        </ProfileSection>
+
+        <ProfileSection title="Support & Legal">
+          <ProfileItem
+            label="Help Center"
+            onPress={() => {}}
+            icon={<HelpCircle size={20} color={COLORS.primary} />}
+          />
+          <ProfileItem
+            label="Contact Us"
+            onPress={() => {}}
+            icon={<Mail size={20} color={COLORS.primary} />}
+          />
+          <ProfileItem
+            label="Terms of Service"
+            onPress={() => {}}
+            icon={<File size={20} color={COLORS.primary} />}
+          />
+          <ProfileItem
+            label="Privacy Policy"
+            onPress={() => {}}
+            icon={<Shield size={20} color={COLORS.primary} />}
+          />
+        </ProfileSection>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
-      </View>
-
-      <ProfileSection title="Personal Information">
-        <ProfileItem label="Full Name" value={userInfo.name} onPress={() => {}} />
-        <ProfileItem label="Phone" value={userInfo.phone} onPress={() => {}} />
-        <ProfileItem label="Date of Birth" value={userInfo.dob} onPress={() => {}} />
-        <ProfileItem label="Gender" value={userInfo.gender} onPress={() => {}} />
-      </ProfileSection>
-
-      <ProfileSection title="Account Settings">
-        <ProfileItem 
-          label="Change Password" 
-          onPress={() => {}} 
-          icon={<Lock size={20} color={COLORS.primary} />} 
-        />
-        <ProfileItem 
-          label="Notification Preferences" 
-          onPress={() => {}} 
-          icon={<Bell size={20} color={COLORS.primary} />} 
-        />
-        <ProfileItem 
-          label="Language Settings" 
-          onPress={() => {}} 
-          icon={<Globe size={20} color={COLORS.primary} />} 
-        />
-      </ProfileSection>
-
-      <ProfileSection title="Support & Legal">
-        <ProfileItem 
-          label="Help Center" 
-          onPress={() => {}} 
-          icon={<HelpCircle size={20} color={COLORS.primary} />} 
-        />
-        <ProfileItem 
-          label="Contact Us" 
-          onPress={() => {}} 
-          icon={<Mail size={20} color={COLORS.primary} />} 
-        />
-        <ProfileItem 
-          label="Terms of Service" 
-          onPress={() => {}} 
-          icon={<File size={20} color={COLORS.primary} />} 
-        />
-        <ProfileItem 
-          label="Privacy Policy" 
-          onPress={() => {}} 
-          icon={<Shield size={20} color={COLORS.primary} />} 
-        />
-      </ProfileSection>
-
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Log Out</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F9FAFC',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F9FAFC',

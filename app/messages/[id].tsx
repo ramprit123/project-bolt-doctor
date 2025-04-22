@@ -4,6 +4,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, Send, Paperclip, Lock } from 'lucide-react-native';
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Sample conversation data
 const conversationsData = {
@@ -12,7 +13,8 @@ const conversationsData = {
       id: '1',
       name: 'Dr. Sarah Johnson',
       specialty: 'Cardiologist',
-      avatar: 'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300',
+      avatar:
+        'https://images.pexels.com/photos/5214959/pexels-photo-5214959.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
     messages: [
       {
@@ -58,7 +60,8 @@ const conversationsData = {
       id: '2',
       name: 'Dr. Michael Chen',
       specialty: 'Radiologist',
-      avatar: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
+      avatar:
+        'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
     messages: [
       {
@@ -90,16 +93,26 @@ type Message = {
   timestamp: string;
 };
 
-const MessageItem = ({ message, doctorAvatar }: { message: Message; doctorAvatar: string }) => {
+const MessageItem = ({
+  message,
+  doctorAvatar,
+}: {
+  message: Message;
+  doctorAvatar: string;
+}) => {
   const isUser = message.sender === 'user';
-  
+
   return (
     <View style={[styles.messageRow, isUser ? styles.userMessageRow : {}]}>
       {!isUser && (
         <Image source={{ uri: doctorAvatar }} style={styles.messageAvatar} />
       )}
-      <View style={[styles.messageBubble, isUser ? styles.userMessageBubble : {}]}>
-        <Text style={[styles.messageText, isUser ? styles.userMessageText : {}]}>
+      <View
+        style={[styles.messageBubble, isUser ? styles.userMessageBubble : {}]}
+      >
+        <Text
+          style={[styles.messageText, isUser ? styles.userMessageText : {}]}
+        >
           {message.text}
         </Text>
         <Text style={styles.messageTime}>{message.timestamp}</Text>
@@ -110,10 +123,10 @@ const MessageItem = ({ message, doctorAvatar }: { message: Message; doctorAvatar
 
 export default function ConversationScreen() {
   const { id } = useLocalSearchParams();
-  const conversation = conversationsData[id as string];
+  const conversation = conversationsData[id as keyof typeof conversationsData];
   const [message, setMessage] = useState('');
   const flatListRef = useRef<FlatList>(null);
-  
+
   if (!conversation) {
     return (
       <View style={styles.container}>
@@ -135,85 +148,105 @@ export default function ConversationScreen() {
 
   const handleSendMessage = () => {
     if (message.trim() === '') return;
-    
+
     // In a real app, this would send the message to an API
     // For now, we'll just clear the input
     setMessage('');
-    
+
     // Scroll to bottom after sending
     setTimeout(scrollToBottom, 100);
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <ChevronLeft size={24} color={COLORS.textPrimary} />
-          </TouchableOpacity>
-          
-          <Image source={{ uri: conversation.doctor.avatar }} style={styles.doctorAvatar} />
-          
-          <View style={styles.doctorInfo}>
-            <Text style={styles.doctorName}>{conversation.doctor.name}</Text>
-            <Text style={styles.doctorSpecialty}>{conversation.doctor.specialty}</Text>
-          </View>
-          
-          <TouchableOpacity style={styles.searchButton}>
-            <Lock size={20} color={COLORS.textPrimary} />
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.secureNotice}>
-          <Lock size={16} color={COLORS.textSecondary} />
-          <Text style={styles.secureText}>Secure Medical Messaging</Text>
-        </View>
-        
-        <FlatList
-          ref={flatListRef}
-          data={conversation.messages}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <MessageItem 
-              message={item} 
-              doctorAvatar={conversation.doctor.avatar} 
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}
+            >
+              <ChevronLeft size={24} color={COLORS.textPrimary} />
+            </TouchableOpacity>
+
+            <Image
+              source={{ uri: conversation.doctor.avatar }}
+              style={styles.doctorAvatar}
             />
-          )}
-          contentContainerStyle={styles.messagesContainer}
-          onContentSizeChange={scrollToBottom}
-        />
-        
-        <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.attachButton}>
-            <Paperclip size={24} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-          
-          <TextInput
-            style={styles.input}
-            placeholder="Type your message..."
-            value={message}
-            onChangeText={setMessage}
-            multiline
+
+            <View style={styles.doctorInfo}>
+              <Text style={styles.doctorName}>{conversation.doctor.name}</Text>
+              <Text style={styles.doctorSpecialty}>
+                {conversation.doctor.specialty}
+              </Text>
+            </View>
+
+            <TouchableOpacity style={styles.searchButton}>
+              <Lock size={20} color={COLORS.textPrimary} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.secureNotice}>
+            <Lock size={16} color={COLORS.textSecondary} />
+            <Text style={styles.secureText}>Secure Medical Messaging</Text>
+          </View>
+
+          <FlatList
+            ref={flatListRef}
+            data={conversation.messages}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <MessageItem
+                message={item}
+                doctorAvatar={conversation.doctor.avatar}
+              />
+            )}
+            contentContainerStyle={styles.messagesContainer}
+            onContentSizeChange={scrollToBottom}
           />
-          
-          <TouchableOpacity 
-            style={[styles.sendButton, message.trim() === '' ? styles.sendButtonDisabled : {}]}
-            onPress={handleSendMessage}
-            disabled={message.trim() === ''}
-          >
-            <Send size={20} color={message.trim() === '' ? COLORS.textTertiary : '#FFFFFF'} />
-          </TouchableOpacity>
+
+          <View style={styles.inputContainer}>
+            <TouchableOpacity style={styles.attachButton}>
+              <Paperclip size={24} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Type your message..."
+              value={message}
+              onChangeText={setMessage}
+              multiline
+            />
+
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                message.trim() === '' ? styles.sendButtonDisabled : {},
+              ]}
+              onPress={handleSendMessage}
+              disabled={message.trim() === ''}
+            >
+              <Send
+                size={20}
+                color={message.trim() === '' ? COLORS.textTertiary : '#FFFFFF'}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F9FAFC',

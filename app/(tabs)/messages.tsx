@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Sample data for conversations
 const conversations = [
@@ -97,41 +98,47 @@ export default function MessagesScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity>
-            <ChevronLeft size={24} color={COLORS.textPrimary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Messages</Text>
-          <TouchableOpacity>
-            <Search size={24} color={COLORS.textPrimary} />
-          </TouchableOpacity>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <TouchableOpacity>
+              <ChevronLeft size={24} color={COLORS.textPrimary} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Messages</Text>
+            <TouchableOpacity>
+              <Search size={24} color={COLORS.textPrimary} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.secureNotice}>
-        <Lock size={16} color={COLORS.textSecondary} />
-        <Text style={styles.secureText}>Secure Medical Messaging</Text>
-      </View>
+        <View style={styles.secureNotice}>
+          <Lock size={16} color={COLORS.textSecondary} />
+          <Text style={styles.secureText}>Secure Medical Messaging</Text>
+        </View>
 
-      <FlatList
-        data={conversations}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ConversationItem
-            conversation={item}
-            onPress={() => handleConversationPress(item.id)}
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+        <FlatList
+          data={conversations}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ConversationItem
+              conversation={item}
+              onPress={() => handleConversationPress(item.id)}
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',

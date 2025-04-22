@@ -1,25 +1,47 @@
 import { Tabs } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
-import { Chrome as Home, Calendar, MessageSquare, User } from 'lucide-react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { Home, Calendar, MessageSquare, User } from 'lucide-react-native';
 import { COLORS } from '@/constants/Colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            height: 60 + (Platform.OS === 'ios' ? insets.bottom : 0),
+            paddingBottom: Platform.OS === 'ios' ? insets.bottom : 10,
+          },
+        ],
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textSecondary,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIconStyle: styles.tabBarIcon,
-      }}>
+        tabBarHideOnKeyboard: true,
+        tabBarShowLabel: true,
+        tabBarAllowFontScaling: false,
+        tabBarItemStyle: styles.tabBarItem,
+        tabBarBackground: () => (
+          <BlurView
+            tint="light"
+            intensity={100}
+            style={StyleSheet.absoluteFill}
+          />
+        ),
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Home size={size} color={color} />
+            <Home size={size} color={color} strokeWidth={2} />
           ),
         }}
       />
@@ -28,7 +50,7 @@ export default function TabLayout() {
         options={{
           title: 'Appointments',
           tabBarIcon: ({ color, size }) => (
-            <Calendar size={size} color={color} />
+            <Calendar size={size} color={color} strokeWidth={2} />
           ),
         }}
       />
@@ -37,7 +59,7 @@ export default function TabLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
-            <MessageSquare size={size} color={color} />
+            <MessageSquare size={size} color={color} strokeWidth={2} />
           ),
         }}
       />
@@ -46,7 +68,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <User size={size} color={color} />
+            <User size={size} color={color} strokeWidth={2} />
           ),
         }}
       />
@@ -56,18 +78,28 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
+    position: 'absolute',
+    backgroundColor: Platform.select({
+      ios: 'transparent',
+      android: '#FFFFFF',
+    }),
+    borderTopWidth: Platform.select({
+      ios: 0,
+      android: 1,
+    }),
     borderTopColor: '#F0F0F0',
-    height: 60,
-    paddingTop: 6,
-    paddingBottom: 10,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   tabBarLabel: {
     fontSize: 12,
     fontFamily: 'Inter_500Medium',
+    marginBottom: Platform.OS === 'ios' ? 0 : 4,
   },
   tabBarIcon: {
     marginTop: 3,
+  },
+  tabBarItem: {
+    paddingTop: 6,
   },
 });

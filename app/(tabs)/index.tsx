@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const specialties = [
   { id: 1, name: 'Sonography', icon: 'waveform' },
@@ -65,87 +66,93 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Find Your Doctor</Text>
-          <Text style={styles.subtitle}>Book appointments easily</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.title}>Find Your Doctor</Text>
+            <Text style={styles.subtitle}>Book appointments easily</Text>
+          </View>
+          <TouchableOpacity style={styles.avatar}>
+            <Image
+              source={{
+                uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300',
+              }}
+              style={styles.avatarImage}
+            />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.avatar}>
-          <Image
-            source={{
-              uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300',
-            }}
-            style={styles.avatarImage}
+
+        <View style={styles.searchContainer}>
+          <Search
+            size={20}
+            color={COLORS.textSecondary}
+            style={styles.searchIcon}
           />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <Search
-          size={20}
-          color={COLORS.textSecondary}
-          style={styles.searchIcon}
-        />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search doctors, specialties..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-
-      <View style={styles.bookSonography}>
-        <View style={styles.bookSonographyIcon}>
-          <Text style={styles.bookSonographyIconText}>🔊</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search doctors, specialties..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
         </View>
-        <View style={styles.bookSonographyContent}>
-          <Text style={styles.bookSonographyTitle}>Book Sonography</Text>
-          <Text style={styles.bookSonographySubtitle}>
-            Quick appointment for ultrasound services
-          </Text>
-        </View>
-        <CustomButton
-          title="Book Now"
-          onPress={() => {}}
-          style={styles.bookNowButton}
-        />
-      </View>
 
-      <Text style={styles.sectionTitle}>Popular Specialties</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.specialtiesScroll}
-      >
-        {specialties.map((specialty) => (
-          <SpecialtyCard key={specialty.id} specialty={specialty} />
+        <View style={styles.bookSonography}>
+          <View style={styles.bookSonographyIcon}>
+            <Text style={styles.bookSonographyIconText}>🔊</Text>
+          </View>
+          <View style={styles.bookSonographyContent}>
+            <Text style={styles.bookSonographyTitle}>Book Sonography</Text>
+            <Text style={styles.bookSonographySubtitle}>
+              Quick appointment for ultrasound services
+            </Text>
+          </View>
+          <CustomButton
+            title="Book Now"
+            onPress={() => {}}
+            style={styles.bookNowButton}
+          />
+        </View>
+
+        <Text style={styles.sectionTitle}>Popular Specialties</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.specialtiesScroll}
+        >
+          {specialties.map((specialty) => (
+            <SpecialtyCard key={specialty.id} specialty={specialty} />
+          ))}
+        </ScrollView>
+
+        <Text style={styles.sectionTitle}>Available Doctors</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.doctorsScroll}
+        >
+          {doctors.map((doctor) => (
+            <DoctorCard key={doctor.id} doctor={doctor} />
+          ))}
+        </ScrollView>
+
+        <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+        {appointments.map((appointment) => (
+          <AppointmentCard key={appointment.id} appointment={appointment} />
         ))}
       </ScrollView>
-
-      <Text style={styles.sectionTitle}>Available Doctors</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.doctorsScroll}
-      >
-        {doctors.map((doctor) => (
-          <DoctorCard key={doctor.id} doctor={doctor} />
-        ))}
-      </ScrollView>
-
-      <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
-      {appointments.map((appointment) => (
-        <AppointmentCard key={appointment.id} appointment={appointment} />
-      ))}
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',

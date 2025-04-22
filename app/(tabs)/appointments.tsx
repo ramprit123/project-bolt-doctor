@@ -4,6 +4,7 @@ import { Calendar, Clock, MapPin, ChevronRight } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Sample data for upcoming and past appointments
 const upcomingAppointments = [
@@ -68,7 +69,13 @@ type AppointmentType = {
   status: string;
 };
 
-const AppointmentCard = ({ appointment, onPress }: { appointment: AppointmentType; onPress: () => void }) => {
+const AppointmentCard = ({
+  appointment,
+  onPress,
+}: {
+  appointment: AppointmentType;
+  onPress: () => void;
+}) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Confirmed':
@@ -87,31 +94,40 @@ const AppointmentCard = ({ appointment, onPress }: { appointment: AppointmentTyp
   return (
     <TouchableOpacity style={styles.appointmentCard} onPress={onPress}>
       <View style={styles.appointmentHeader}>
-        <Text style={[styles.statusText, { color: getStatusColor(appointment.status) }]}>
+        <Text
+          style={[
+            styles.statusText,
+            { color: getStatusColor(appointment.status) },
+          ]}
+        >
           {appointment.status}
         </Text>
       </View>
-      
+
       <Text style={styles.doctorName}>{appointment.doctorName}</Text>
       <Text style={styles.specialty}>{appointment.specialty}</Text>
-      
+
       <View style={styles.appointmentDetail}>
         <Calendar size={16} color={COLORS.textSecondary} />
         <Text style={styles.detailText}>{appointment.date}</Text>
       </View>
-      
+
       <View style={styles.appointmentDetail}>
         <Clock size={16} color={COLORS.textSecondary} />
-        <Text style={styles.detailText}>{appointment.time} • {appointment.duration}</Text>
+        <Text style={styles.detailText}>
+          {appointment.time} • {appointment.duration}
+        </Text>
       </View>
-      
+
       <View style={styles.appointmentDetail}>
         <MapPin size={16} color={COLORS.textSecondary} />
         <Text style={styles.detailText}>{appointment.location}</Text>
       </View>
-      
+
       <View style={styles.appointmentFooter}>
-        <Text style={styles.appointmentType}>{appointment.appointmentType}</Text>
+        <Text style={styles.appointmentType}>
+          {appointment.appointmentType}
+        </Text>
         <ChevronRight size={20} color={COLORS.primary} />
       </View>
     </TouchableOpacity>
@@ -120,54 +136,68 @@ const AppointmentCard = ({ appointment, onPress }: { appointment: AppointmentTyp
 
 export default function AppointmentsScreen() {
   const [activeTab, setActiveTab] = useState('upcoming');
-  
-  const handleAppointmentPress = (id: string) => {
-    router.push(`/appointment/${id}`);
-  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Appointments</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>My Appointments</Text>
+        </View>
+
+        <View style={styles.tabs}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'upcoming' && styles.activeTab]}
+            onPress={() => setActiveTab('upcoming')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'upcoming' && styles.activeTabText,
+              ]}
+            >
+              Upcoming
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'past' && styles.activeTab]}
+            onPress={() => setActiveTab('past')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'past' && styles.activeTabText,
+              ]}
+            >
+              Past
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <FlatList
+          data={
+            activeTab === 'upcoming' ? upcomingAppointments : pastAppointments
+          }
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <AppointmentCard
+              appointment={item}
+              onPress={() => router.push(`/appointment/${item.id}`)}
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
-      
-      <View style={styles.tabs}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'upcoming' && styles.activeTab]}
-          onPress={() => setActiveTab('upcoming')}
-        >
-          <Text style={[styles.tabText, activeTab === 'upcoming' && styles.activeTabText]}>
-            Upcoming
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'past' && styles.activeTab]}
-          onPress={() => setActiveTab('past')}
-        >
-          <Text style={[styles.tabText, activeTab === 'past' && styles.activeTabText]}>
-            Past
-          </Text>
-        </TouchableOpacity>
-      </View>
-      
-      <FlatList
-        data={activeTab === 'upcoming' ? upcomingAppointments : pastAppointments}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <AppointmentCard
-            appointment={item}
-            onPress={() => handleAppointmentPress(item.id)}
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F9FAFC',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F9FAFC',
