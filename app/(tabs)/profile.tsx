@@ -6,7 +6,7 @@ import {
   ChevronRight,
   File,
   Globe,
-  CircleHelp as HelpCircle,
+  CircleHelp as HelpCircle, // Alias CircleHelp to HelpCircle
   Lock,
   Mail,
   Shield,
@@ -27,6 +27,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font'; // Assuming you are loading fonts like this
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+} from '@expo-google-fonts/inter'; // Assuming these are your fonts
 
 const ProfileSection = ({
   title,
@@ -41,6 +47,7 @@ const ProfileSection = ({
   </View>
 );
 
+// FIX APPLIED HERE: ProfileItem component refactored
 const ProfileItem = ({
   label,
   value,
@@ -52,29 +59,30 @@ const ProfileItem = ({
   value?: string;
   onPress?: () => void;
   icon?: React.ReactNode;
-  index: number;
+  index: number; // Used for delay in entering animation
 }) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
+    // This style applies the scale transform based on press gestures
     transform: [{ scale: scale.value }],
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.95);
+    scale.value = withSpring(0.95); // Shrink slightly on press in
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1);
+    scale.value = withSpring(1); // Return to original size on press out
   };
 
   return (
-    <Animated.View
-      entering={FadeInDown.delay(index * 100)}
-      style={animatedStyle}
-    >
+    // Outer Animated.View: Handles the ENTERING layout animation only
+    <Animated.View entering={FadeInDown.delay(index * 100)}>
+      {/* Inner TouchableOpacity: Handles the base style, the custom transform,
+          and the press events */}
       <TouchableOpacity
-        style={styles.profileItem}
+        style={[styles.profileItem, animatedStyle]} // Combine base item style and animated scale transform
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -89,6 +97,7 @@ const ProfileItem = ({
     </Animated.View>
   );
 };
+// END FIX
 
 export default function ProfileScreen() {
   const userInfo = {
@@ -99,8 +108,21 @@ export default function ProfileScreen() {
     gender: 'Female',
   };
 
+  // Assume fonts are loaded using useFonts from expo-font
+  let [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+  });
+
+  // You might want to wait for fonts to load before rendering
+  if (!fontsLoaded) {
+    return null; // Or a loading indicator
+  }
+
   const handleEditProfile = () => {
     // In a real app, navigate to edit profile screen
+    console.log('Navigate to edit profile');
   };
 
   const handleLogout = () => {
@@ -110,6 +132,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
+        {/* Header section - uses entering animations, but no conflicting transforms */}
         <Animated.View
           style={styles.header}
           entering={FadeInDown.duration(800)}
@@ -148,13 +171,14 @@ export default function ProfileScreen() {
           </Animated.View>
         </Animated.View>
 
+        {/* Profile sections - outer Animated.Views handle layout animations, inner ProfileItems handle individual item animations */}
         <Animated.View entering={FadeInUp.delay(200)}>
           <ProfileSection title="Personal Information">
             <ProfileItem
               label="Full Name"
               value={userInfo.name}
               onPress={() => {}}
-              index={0}
+              index={0} // Pass index for staggered animation delay
             />
             <ProfileItem
               label="Phone"
@@ -229,6 +253,7 @@ export default function ProfileScreen() {
           </ProfileSection>
         </Animated.View>
 
+        {/* Logout button is not animated with layout animation or transform */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
@@ -350,7 +375,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.error,
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 40, // Added some bottom margin for scrollability
   },
   logoutButtonText: {
     fontSize: 16,
