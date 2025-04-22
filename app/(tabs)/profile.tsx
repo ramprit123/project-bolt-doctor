@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     padding: SPACING.lg,
-    paddingTop: 60,
+    paddingTop: SPACING.sm,
     backgroundColor: '#FFFFFF',
   },
   profileImageContainer: {
