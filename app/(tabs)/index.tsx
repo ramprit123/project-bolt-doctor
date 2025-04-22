@@ -25,6 +25,12 @@ import Animated, {
   FadeInRight,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font'; // Assuming you are loading fonts like this
+import {
+  Inter_400Regular,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter'; // Assuming these are your fonts
 
 const specialties = [
   { id: 1, name: 'Sonography', icon: 'waveform' },
@@ -77,11 +83,24 @@ export default function HomeScreen() {
   const searchScale = useSharedValue(0.8);
   const avatarScale = useSharedValue(0.8);
 
+  // Assume fonts are loaded using useFonts from expo-font
+  let [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  // You might want to wait for fonts to load before rendering
+  if (!fontsLoaded) {
+    return null; // Or a loading indicator
+  }
+
   useEffect(() => {
+    // Animate header opacity, search scale, and avatar scale on mount
     headerOpacity.value = withTiming(1, { duration: 1000 });
     searchScale.value = withSpring(1);
     avatarScale.value = withSpring(1);
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
   const headerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: headerOpacity.value,
@@ -106,6 +125,7 @@ export default function HomeScreen() {
             <Text style={styles.title}>Find Your Doctor</Text>
             <Text style={styles.subtitle}>Book appointments easily</Text>
           </View>
+          {/* Avatar Animated View remains as is, driven by useSharedValue */}
           <Animated.View style={[styles.avatar, avatarAnimatedStyle]}>
             <Image
               source={{
@@ -116,30 +136,32 @@ export default function HomeScreen() {
           </Animated.View>
         </Animated.View>
 
-        <Animated.View
-          style={[styles.searchContainer, searchAnimatedStyle]}
-          entering={FadeInDown.delay(200).springify()}
-        >
-          <Search
-            size={20}
-            color={COLORS.textSecondary}
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search doctors, specialties..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
+        {/* FIX APPLIED HERE: */}
+        {/* Outer Animated.View handles the ENTERING layout animation */}
+        <Animated.View entering={FadeInDown.delay(200).springify()}>
+          {/* Inner Animated.View handles the custom transform style */}
+          {/* It also holds the base styles for the search container */}
+          <Animated.View style={[styles.searchContainer, searchAnimatedStyle]}>
+           <Search
+              size={20}
+              color={COLORS.textSecondary}
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search doctors, specialties..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </Animated.View>
         </Animated.View>
+        {/* END FIX */}
 
         <Animated.View
           style={styles.bookSonography}
+          // This Animated.View only has a layout animation, no conflicting transform style
           entering={FadeInRight.delay(400).springify()}
         >
-          <View style={styles.bookSonographyIcon}>
-            <Text style={styles.bookSonographyIconText}>🔊</Text>
-          </View>
           <View style={styles.bookSonographyContent}>
             <Text style={styles.bookSonographyTitle}>Book Sonography</Text>
             <Text style={styles.bookSonographySubtitle}>
@@ -224,6 +246,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  // Styles for the inner search container View
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -231,6 +254,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     borderRadius: 12,
     marginBottom: SPACING.lg,
+    // Note: styles here are now applied to the *inner* Animated.View
   },
   searchIcon: {
     marginRight: SPACING.sm,

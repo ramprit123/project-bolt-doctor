@@ -1,4 +1,6 @@
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -37,7 +39,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <GestureHandlerRootView>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -50,6 +52,6 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
-    </>
+    </GestureHandlerRootView>
   );
 }
