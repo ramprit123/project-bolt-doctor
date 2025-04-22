@@ -5,16 +5,25 @@ import CustomButton from '@/components/ui/CustomButton';
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
 import { Search } from 'lucide-react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+  withDelay,
+  FadeIn,
+  FadeInDown,
+  FadeInRight,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const specialties = [
@@ -64,6 +73,27 @@ const appointments = [
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
+  const headerOpacity = useSharedValue(0);
+  const searchScale = useSharedValue(0.8);
+  const avatarScale = useSharedValue(0.8);
+
+  useEffect(() => {
+    headerOpacity.value = withTiming(1, { duration: 1000 });
+    searchScale.value = withSpring(1);
+    avatarScale.value = withSpring(1);
+  }, []);
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+  }));
+
+  const searchAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: searchScale.value }],
+  }));
+
+  const avatarAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: avatarScale.value }],
+  }));
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -71,22 +101,25 @@ export default function HomeScreen() {
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
       >
-        <View style={styles.header}>
+        <Animated.View style={[styles.header, headerAnimatedStyle]}>
           <View>
             <Text style={styles.title}>Find Your Doctor</Text>
             <Text style={styles.subtitle}>Book appointments easily</Text>
           </View>
-          <TouchableOpacity style={styles.avatar}>
+          <Animated.View style={[styles.avatar, avatarAnimatedStyle]}>
             <Image
               source={{
                 uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300',
               }}
               style={styles.avatarImage}
             />
-          </TouchableOpacity>
-        </View>
+          </Animated.View>
+        </Animated.View>
 
-        <View style={styles.searchContainer}>
+        <Animated.View
+          style={[styles.searchContainer, searchAnimatedStyle]}
+          entering={FadeInDown.delay(200).springify()}
+        >
           <Search
             size={20}
             color={COLORS.textSecondary}
@@ -98,9 +131,12 @@ export default function HomeScreen() {
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-        </View>
+        </Animated.View>
 
-        <View style={styles.bookSonography}>
+        <Animated.View
+          style={styles.bookSonography}
+          entering={FadeInRight.delay(400).springify()}
+        >
           <View style={styles.bookSonographyIcon}>
             <Text style={styles.bookSonographyIconText}>🔊</Text>
           </View>
@@ -115,7 +151,7 @@ export default function HomeScreen() {
             onPress={() => {}}
             style={styles.bookNowButton}
           />
-        </View>
+        </Animated.View>
 
         <Text style={styles.sectionTitle}>Popular Specialties</Text>
         <ScrollView

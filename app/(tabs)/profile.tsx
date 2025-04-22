@@ -1,9 +1,31 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { ChevronRight, Lock, Bell, Globe, CircleHelp as HelpCircle, Mail, File, Shield } from 'lucide-react-native';
 import { COLORS } from '@/constants/Colors';
 import { SPACING } from '@/constants/Spacing';
 import { router } from 'expo-router';
+import {
+  Bell,
+  ChevronRight,
+  File,
+  Globe,
+  CircleHelp as HelpCircle,
+  Lock,
+  Mail,
+  Shield,
+} from 'lucide-react-native';
+import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ProfileSection = ({
@@ -24,21 +46,49 @@ const ProfileItem = ({
   value,
   onPress,
   icon,
+  index,
 }: {
   label: string;
   value?: string;
   onPress?: () => void;
   icon?: React.ReactNode;
-}) => (
-  <TouchableOpacity style={styles.profileItem} onPress={onPress}>
-    {icon && <View style={styles.profileItemIcon}>{icon}</View>}
-    <View style={styles.profileItemContent}>
-      <Text style={styles.profileItemLabel}>{label}</Text>
-      {value && <Text style={styles.profileItemValue}>{value}</Text>}
-    </View>
-    <ChevronRight size={20} color={COLORS.textSecondary} />
-  </TouchableOpacity>
-);
+  index: number;
+}) => {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.95);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
+
+  return (
+    <Animated.View
+      entering={FadeInDown.delay(index * 100)}
+      style={animatedStyle}
+    >
+      <TouchableOpacity
+        style={styles.profileItem}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        {icon && <View style={styles.profileItemIcon}>{icon}</View>}
+        <View style={styles.profileItemContent}>
+          <Text style={styles.profileItemLabel}>{label}</Text>
+          {value && <Text style={styles.profileItemValue}>{value}</Text>}
+        </View>
+        <ChevronRight size={20} color={COLORS.textSecondary} />
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
 
 export default function ProfileScreen() {
   const userInfo = {
@@ -60,91 +110,124 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
-        <View style={styles.header}>
+        <Animated.View
+          style={styles.header}
+          entering={FadeInDown.duration(800)}
+        >
           <View style={styles.profileImageContainer}>
-            <Image
+            <Animated.Image
               source={{
                 uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300',
               }}
-              style={styles.profileImage}
+              style={[styles.profileImage]}
+              entering={FadeInDown.duration(1000).springify()}
             />
             <TouchableOpacity style={styles.cameraButton}>
               <Text style={styles.cameraButtonText}>📷</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.profileName}>{userInfo.name}</Text>
-          <Text style={styles.profileEmail}>{userInfo.email}</Text>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={handleEditProfile}
+          <Animated.Text
+            style={styles.profileName}
+            entering={FadeInUp.duration(800).delay(200)}
           >
-            <Text style={styles.editButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-        </View>
+            {userInfo.name}
+          </Animated.Text>
+          <Animated.Text
+            style={styles.profileEmail}
+            entering={FadeInUp.duration(800).delay(400)}
+          >
+            {userInfo.email}
+          </Animated.Text>
+          <Animated.View entering={FadeInUp.duration(800).delay(600)}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={handleEditProfile}
+            >
+              <Text style={styles.editButtonText}>Edit Profile</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </Animated.View>
 
-        <ProfileSection title="Personal Information">
-          <ProfileItem
-            label="Full Name"
-            value={userInfo.name}
-            onPress={() => {}}
-          />
-          <ProfileItem
-            label="Phone"
-            value={userInfo.phone}
-            onPress={() => {}}
-          />
-          <ProfileItem
-            label="Date of Birth"
-            value={userInfo.dob}
-            onPress={() => {}}
-          />
-          <ProfileItem
-            label="Gender"
-            value={userInfo.gender}
-            onPress={() => {}}
-          />
-        </ProfileSection>
+        <Animated.View entering={FadeInUp.delay(200)}>
+          <ProfileSection title="Personal Information">
+            <ProfileItem
+              label="Full Name"
+              value={userInfo.name}
+              onPress={() => {}}
+              index={0}
+            />
+            <ProfileItem
+              label="Phone"
+              value={userInfo.phone}
+              onPress={() => {}}
+              index={1}
+            />
+            <ProfileItem
+              label="Date of Birth"
+              value={userInfo.dob}
+              onPress={() => {}}
+              index={2}
+            />
+            <ProfileItem
+              label="Gender"
+              value={userInfo.gender}
+              onPress={() => {}}
+              index={3}
+            />
+          </ProfileSection>
+        </Animated.View>
 
-        <ProfileSection title="Account Settings">
-          <ProfileItem
-            label="Change Password"
-            onPress={() => {}}
-            icon={<Lock size={20} color={COLORS.primary} />}
-          />
-          <ProfileItem
-            label="Notification Preferences"
-            onPress={() => {}}
-            icon={<Bell size={20} color={COLORS.primary} />}
-          />
-          <ProfileItem
-            label="Language Settings"
-            onPress={() => {}}
-            icon={<Globe size={20} color={COLORS.primary} />}
-          />
-        </ProfileSection>
+        <Animated.View entering={FadeInUp.delay(400)}>
+          <ProfileSection title="Account Settings">
+            <ProfileItem
+              label="Change Password"
+              onPress={() => {}}
+              icon={<Lock size={20} color={COLORS.primary} />}
+              index={4}
+            />
+            <ProfileItem
+              label="Notification Preferences"
+              onPress={() => {}}
+              icon={<Bell size={20} color={COLORS.primary} />}
+              index={5}
+            />
+            <ProfileItem
+              label="Language Settings"
+              onPress={() => {}}
+              icon={<Globe size={20} color={COLORS.primary} />}
+              index={6}
+            />
+          </ProfileSection>
+        </Animated.View>
 
-        <ProfileSection title="Support & Legal">
-          <ProfileItem
-            label="Help Center"
-            onPress={() => {}}
-            icon={<HelpCircle size={20} color={COLORS.primary} />}
-          />
-          <ProfileItem
-            label="Contact Us"
-            onPress={() => {}}
-            icon={<Mail size={20} color={COLORS.primary} />}
-          />
-          <ProfileItem
-            label="Terms of Service"
-            onPress={() => {}}
-            icon={<File size={20} color={COLORS.primary} />}
-          />
-          <ProfileItem
-            label="Privacy Policy"
-            onPress={() => {}}
-            icon={<Shield size={20} color={COLORS.primary} />}
-          />
-        </ProfileSection>
+        <Animated.View entering={FadeInUp.delay(600)}>
+          <ProfileSection title="Support & Legal">
+            <ProfileItem
+              label="Help Center"
+              onPress={() => {}}
+              icon={<HelpCircle size={20} color={COLORS.primary} />}
+              index={7}
+            />
+            <ProfileItem
+              label="Contact Us"
+              onPress={() => {}}
+              icon={<Mail size={20} color={COLORS.primary} />}
+              index={8}
+            />
+            <ProfileItem
+              label="Terms of Service"
+              onPress={() => {}}
+              icon={<File size={20} color={COLORS.primary} />}
+              index={9}
+            />
+            <ProfileItem
+              label="Privacy Policy"
+              onPress={() => {}}
+              icon={<Shield size={20} color={COLORS.primary} />}
+              index={10}
+            />
+          </ProfileSection>
+        </Animated.View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Log Out</Text>
